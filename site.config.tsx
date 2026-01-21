@@ -26,7 +26,7 @@ export default {
         },
         discord: {
             label: 'Discord',
-            href: 'https://discord.com/invite/69EefZbQhg',
+            href: 'https://discord.com/invite/VR6YMu8wb5',
             icon: 'MessageCircle',
             ariaLabel: 'Join Discord'
         },
