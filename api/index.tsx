@@ -2,7 +2,7 @@ import { NavigationGroup } from '@/types/pages';
 
 export const metadata = {
     kind: 'group',
-    title: 'Community',
-    description: 'Community resources for the Generative AI plugin',
-    order: 1000,
+    title: 'API',
+    description: 'Complete guides for Completions and Responses APIs',
+    order: 100,
 } satisfies NavigationGroup;

@@ -4,12 +4,12 @@ import thumbnail from '@/assets/generative-ai-launcher.jpg';
 
 export default {
     name: 'Generative AI Integration Plugin',
-    url: getSiteUrl('generative-ai'),
+    url: getSiteUrl('generative-ai-new'),
     thumbnail: thumbnail,
     description: 'Generative AI, native to Unreal Engine. Supports OpenAI, Claude, Gemini, and local LLMs with strongly-typed APIs, tool calling, streaming, and multimodal generation.',
     links: {
         github: 'https://github.com/osmalpkoras/docs-generative-ai-integration-plugin',
-        documentation: '/generative-ai',
+        documentation: '/generative-ai-new',
     },
     github: {
         baseUrl: 'https://github.com/osmalpkoras/docs-generative-ai-integration-plugin',
