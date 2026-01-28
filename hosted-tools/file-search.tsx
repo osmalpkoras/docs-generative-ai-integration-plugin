@@ -16,6 +16,7 @@ import {
     ExampleContent,
     ExampleCpp,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function FileSearchPage() {
     return (

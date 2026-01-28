@@ -15,6 +15,7 @@ import {
     CodeExample,
     ConsoleOutput,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function MultimodalPage() {
     return (

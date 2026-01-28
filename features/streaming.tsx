@@ -17,6 +17,7 @@ import {
     ExampleCpp,
     EnumReference,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function StreamingPage() {
     return (
@@ -384,10 +385,10 @@ public:
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/features/tools">Tools</a> - Enable AI to execute custom functions</li>
-                        <li><a href="/generative-ai/features/structured-output">Structured Output</a> - Type-safe JSON responses</li>
-                        <li><a href="/generative-ai/core/using-sessions">Using Sessions</a> - Learn session management</li>
-                        <li><a href="/generative-ai/api/responses-api">Responses API</a> - Modern API with advanced features</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> - Enable AI to execute custom functions</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STRUCTURED_OUTPUT}>Structured Output</a> - Type-safe JSON responses</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Learn session management</li>
+                        <li><a href={LINK.GENERATIVE_AI.API.RESPONSES_API}>Responses API</a> - Modern API with advanced features</li>
                     </ul>
 
                 </LanguageToggleProvider>

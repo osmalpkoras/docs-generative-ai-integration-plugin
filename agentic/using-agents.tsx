@@ -19,6 +19,7 @@ import {
     Step,
     StepList,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function UsingAgentsPage() {
     return (
@@ -654,8 +655,8 @@ Agent->Prompt(TEXT("New topic..."), OnComplete, OnError);`}
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/agentic/agents-api-reference">Agents API Reference</a> - Complete API documentation</li>
-                        <li><a href="/generative-ai/agentic/mcp-server">MCP Server</a> - Connect to external tool providers</li>
+                        <li><a href={LINK.GENERATIVE_AI.AGENTIC.AGENTS_API_REFERENCE}>Agents API Reference</a> - Complete API documentation</li>
+                        <li><a href={LINK.GENERATIVE_AI.AGENTIC.MCP_SERVER}>MCP Server</a> - Connect to external tool providers</li>
                     </ul>
 
                     <PageFooter />

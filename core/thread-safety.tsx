@@ -17,6 +17,7 @@ import {
     ExampleContent,
     ExampleCpp,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function ThreadSafetyPage() {
     return (
@@ -40,7 +41,7 @@ export default function ThreadSafetyPage() {
                             to block until completion to prevent unpredictable behavior from concurrent state modifications.
                             All your <code>Generate()</code> calls should wait for the <code>OnComplete</code> callback
                             before issuing the next request. See{' '}
-                            <a href="/generative-ai/core/using-sessions">Using Sessions</a> for callback patterns.
+                            <a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> for callback patterns.
                         </p>
                     </Callout>
 
@@ -119,9 +120,9 @@ export default function ThreadSafetyPage() {
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/core/using-sessions">Using Sessions</a> - Learn about session creation and callback patterns</li>
-                        <li><a href="/generative-ai/features/tools">Tools</a> - Create custom tools and understand tool parameters</li>
-                        <li><a href="/generative-ai/core/error-handling">Error Handling</a> - Handle errors gracefully in callbacks</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Learn about session creation and callback patterns</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> - Create custom tools and understand tool parameters</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.ERROR_HANDLING}>Error Handling</a> - Handle errors gracefully in callbacks</li>
                     </ul>
 
                 </LanguageToggleProvider>

@@ -16,6 +16,7 @@ import {
     ExampleContent,
     ExampleCpp,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function StructuredOutputPage() {
     return (
@@ -46,7 +47,7 @@ export default function StructuredOutputPage() {
                         <ExampleContent>
                             Create a UClass that implements the <code>IJsonSchema</code> interface. The plugin automatically
                             generates a JSON schema from your UPROPERTY definitions and ensures the AI's response matches
-                            exactly. See the <a href="/json-schema">JSON Schema Plugin</a> documentation for detailed
+                            exactly. See the <a href={LINK.JSON_SCHEMA.INDEX}>JSON Schema Plugin</a> documentation for detailed
                             information on schema features and constraints.
                         </ExampleContent>
                         <ExampleCpp>
@@ -161,7 +162,7 @@ Session->Generate(
 
                     <p>
                         The JSON Schema Plugin supports complex data structures including nested objects, arrays, enums,
-                        maps, and validation constraints. Visit the <a href="/json-schema">JSON Schema Plugin</a> documentation
+                        maps, and validation constraints. Visit the <a href={LINK.JSON_SCHEMA.INDEX}>JSON Schema Plugin</a> documentation
                         for comprehensive information on:
                     </p>
 
@@ -233,10 +234,10 @@ public:
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/json-schema">JSON Schema Plugin</a> - Comprehensive guide to defining schemas</li>
-                        <li><a href="/generative-ai/features/tools">Tools</a> - Combine structured output with custom tools</li>
-                        <li><a href="/generative-ai/features/streaming">Streaming</a> - Understanding streaming with structured output</li>
-                        <li><a href="/generative-ai/core/using-sessions">Using Sessions</a> - Session management fundamentals</li>
+                        <li><a href={LINK.JSON_SCHEMA.INDEX}>JSON Schema Plugin</a> - Comprehensive guide to defining schemas</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> - Combine structured output with custom tools</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STREAMING}>Streaming</a> - Understanding streaming with structured output</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Session management fundamentals</li>
                     </ul>
 
                 </LanguageToggleProvider>

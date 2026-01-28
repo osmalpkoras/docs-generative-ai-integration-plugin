@@ -257,7 +257,7 @@ Session->Generate(
                         <ExampleTitle>Structured Output with Type Safety</ExampleTitle>
                         <ExampleContent>
                             Define output schemas using UClasses and receive strongly-typed objects instead of JSON. The plugin
-                            automatically generates JSON schemas, validates responses, and converts JSON to UClass instances. See the <a href="/json-schema">JSON Schema Plugin</a> for more details.
+                            automatically generates JSON schemas, validates responses, and converts JSON to UClass instances. See the <a href={LINK.JSON_SCHEMA.INDEX}>JSON Schema Plugin</a> for more details.
                         </ExampleContent>
                         <ExampleCpp>
                             {`UCLASS()
@@ -301,7 +301,7 @@ Session->Generate(
                     <h3>Comprehensive JSON Schema Support</h3>
 
                     <p>
-                        The plugin includes everything from the <a href="/json-schema">JSON Schema Plugin</a>, providing automatic
+                        The plugin includes everything from the <a href={LINK.JSON_SCHEMA.INDEX}>JSON Schema Plugin</a>, providing automatic
                         schema generation and bidirectional conversion between JSON and UClass instances. This powers both the tool
                         system and structured output features.
                     </p>
@@ -362,10 +362,8 @@ Session->Generate(
                     </p>
 
                     <ul>
-                        <li><a href="/generative-ai/getting-started">Getting Started</a> - Set up the plugin and create your first session</li>
-                        <li><a href="/generative-ai/core/using-sessions">Using Sessions</a> - Learn how sessions work</li>
-                        <li><a href={LINK.GENERATIVE_AI.RESPONSES_API.INDEX}>Responses API</a> - Modern API with hosted tools and MCP integration</li>
-                        <li><a href={LINK.GENERATIVE_AI.COMPLETIONS_API.INDEX}>Completions API</a> - OpenAI-compatible API for broad provider support</li>
+                        <li><a href={LINK.GENERATIVE_AI.GETTING_STARTED}>Getting Started</a> - Set up the plugin and create your first session</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Learn how sessions work</li>
                     </ul>
 
                 </LanguageToggleProvider>

@@ -20,6 +20,7 @@ import {
     ApiFunction,
     ApiProperty,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function SessionBasicsPage() {
     return (
@@ -86,7 +87,7 @@ export default function SessionBasicsPage() {
                         <ExampleTitle>OnStreamChunk Callback (Optional)</ExampleTitle>
                         <ExampleContent>
                             Called for each chunk of streamed text. Streaming will be enabled if and only if this callback is provided.
-                            See the <a href="/generative-ai/features/streaming">Streaming</a> page for details.
+                            See the <a href={LINK.GENERATIVE_AI.FEATURES.STREAMING}>Streaming</a> page for details.
                         </ExampleContent>
                         <ExampleCpp>
                             {`Session->Generate(
@@ -108,7 +109,7 @@ export default function SessionBasicsPage() {
                             allowing you to intercept and customize execution. Return a <code>FToolExecutionResult</code> to indicate
                             the outcome. You can return success or error results to prevent automatic execution, return an unhandled result
                             to let the plugin execute the tool automatically, or flag the tool call for termination to stop the execution flow.
-                            See the <a href="/generative-ai/features/tools">Tools</a> page for details.
+                            See the <a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> page for details.
                         </ExampleContent>
                         <ExampleCpp>
                             {`Session->Generate(
@@ -154,12 +155,12 @@ Session->Generate(
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/sessions-api-reference">Sessions API Reference</a> - Learn more about the full API of the session class.</li>
-                        <li><a href="/generative-ai/api/responses-api">Responses API</a> - Modern API with hosted tools and MCP integration</li>
-                        <li><a href="/generative-ai/api/completions-api">Completions API</a> - OpenAI-compatible API for broad provider support</li>
-                        <li><a href="/generative-ai/features/tools">Tools</a> - Enable AI to execute custom functions</li>
-                        <li><a href="/generative-ai/features/streaming">Streaming</a> - Real-time response generation</li>
-                        <li><a href="/generative-ai/features/structured-output">Structured Output</a> - Type-safe JSON responses</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.SESSIONS_API_REFERENCE}>Sessions API Reference</a> - Learn more about the full API of the session class.</li>
+                        <li><a href={LINK.GENERATIVE_AI.API.RESPONSES_API}>Responses API</a> - Modern API with hosted tools and MCP integration</li>
+                        <li><a href={LINK.GENERATIVE_AI.API.COMPLETIONS_API}>Completions API</a> - OpenAI-compatible API for broad provider support</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> - Enable AI to execute custom functions</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STREAMING}>Streaming</a> - Real-time response generation</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STRUCTURED_OUTPUT}>Structured Output</a> - Type-safe JSON responses</li>
                     </ul>
 
                 </LanguageToggleProvider>

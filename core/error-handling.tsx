@@ -17,6 +17,7 @@ import {
     ExampleContent,
     ExampleCpp,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function ErrorHandlingPage() {
     return (
@@ -145,10 +146,10 @@ Session->Generate(
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/core/using-sessions">Using Sessions</a> - Learn about session callbacks and lifecycle</li>
-                        <li><a href="/generative-ai/core/endpoint-configuration">Endpoint Configuration</a> - Configure API providers correctly</li>
-                        <li><a href="/generative-ai/core/generation-callbacks">Generation Callbacks</a> - All available callback types</li>
-                        <li><a href="/generative-ai/features/tools">Tools</a> - Handle errors in tool execution</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Learn about session callbacks and lifecycle</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.ENDPOINT_CONFIGURATION}>Endpoint Configuration</a> - Configure API providers correctly</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.GENERATION_CALLBACKS}>Generation Callbacks</a> - All available callback types</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> - Handle errors in tool execution</li>
                     </ul>
 
                 </LanguageToggleProvider>

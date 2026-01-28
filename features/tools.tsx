@@ -16,6 +16,7 @@ import {
     ExampleContent,
     ExampleCpp,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function ToolsPage() {
     return (
@@ -166,7 +167,7 @@ public:
 
                     <Callout type="info" title="JSON Schema Plugin">
                         <p>
-                            Tool parameter schemas are generated using the <a href="/json-schema">JSON Schema Plugin</a>.
+                            Tool parameter schemas are generated using the <a href={LINK.JSON_SCHEMA.INDEX}>JSON Schema Plugin</a>.
                             See the JSON Schema documentation for advanced features like validation constraints, nested objects,
                             arrays, enums, and more.
                         </p>
@@ -312,10 +313,10 @@ Session->Request.ToolChoice->Mode = EResponsesApiToolChoiceMode::None;`}
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/hosted-tools">Hosted Tools</a> - Use provider-integrated tools for web search, code execution, and more</li>
-                        <li><a href="/json-schema">JSON Schema Plugin</a> - Learn about advanced schema features and constraints</li>
-                        <li><a href="/generative-ai/core/generation-callbacks">Generation Callbacks</a> - All available callback types</li>
-                        <li><a href="/generative-ai/agentic">Agentic</a> - Build autonomous agents with tools and sub-agents</li>
+                        <li><a href={LINK.GENERATIVE_AI.HOSTED_TOOLS.INDEX}>Hosted Tools</a> - Use provider-integrated tools for web search, code execution, and more</li>
+                        <li><a href={LINK.JSON_SCHEMA.INDEX}>JSON Schema Plugin</a> - Learn about advanced schema features and constraints</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.GENERATION_CALLBACKS}>Generation Callbacks</a> - All available callback types</li>
+                        <li><a href={LINK.GENERATIVE_AI.AGENTIC.INDEX}>Agentic</a> - Build autonomous agents with tools and sub-agents</li>
                     </ul>
 
                 </LanguageToggleProvider>

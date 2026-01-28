@@ -11,6 +11,7 @@ import { SiteDocumentation, PageContainer, PageHeader, PageFooter } from '@/comp
 import { Callout, Step, StepList } from '@/components/doc-components';
 import { CodeExample, CodeBlock, ConsoleOutput } from '@/components/doc-components/code-block';
 import { LanguageToggleProvider, LanguageToggle } from '@/components/doc-components/language-toggle';
+import { LINK } from '@/lib/pages.generated';
 
 export default function McpServerPage() {
     return (
@@ -533,10 +534,10 @@ public:
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/agentic/using-agents">Using Agents</a> - Learn how to create agents that use tools</li>
-                        <li><a href="/generative-ai/agentic/agents-api-reference">Agents API Reference</a> - Complete API documentation</li>
-                        <li><a href="/generative-ai/features/tools">Creating Tools</a> - Tool implementation guide</li>
-                        <li><a href="/generative-ai/hosted-tools/mcp-tools">MCP Tools</a> - Using external MCP servers in agents</li>
+                        <li><a href={LINK.GENERATIVE_AI.AGENTIC.USING_AGENTS}>Using Agents</a> - Learn how to create agents that use tools</li>
+                        <li><a href={LINK.GENERATIVE_AI.AGENTIC.AGENTS_API_REFERENCE}>Agents API Reference</a> - Complete API documentation</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Creating Tools</a> - Tool implementation guide</li>
+                        <li><a href={LINK.GENERATIVE_AI.HOSTED_TOOLS.MCP_TOOLS}>MCP Tools</a> - Using external MCP servers in agents</li>
                     </ul>
 
                     <PageFooter />

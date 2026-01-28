@@ -17,6 +17,7 @@ import {
     ExampleContent,
     ExampleCpp,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function EndpointConfigurationPage() {
     return (
@@ -178,9 +179,8 @@ export default function EndpointConfigurationPage() {
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/core/using-sessions">Using Sessions</a> - Create and manage sessions with endpoints</li>
-                        <li><a href="/generative-ai/core/sessions-api-reference">Sessions API Reference</a> - Complete API documentation</li>
-                        <li><a href="/generative-ai/core/message-management">Message Management</a> - Build conversations</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Create and manage sessions with endpoints</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.SESSIONS_API_REFERENCE}>Sessions API Reference</a> - Complete API documentation</li>
                     </ul>
 
                 </LanguageToggleProvider>

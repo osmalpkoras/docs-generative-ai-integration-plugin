@@ -18,6 +18,7 @@ import {
     ApiPropertyGroup,
     EnumReference,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function AgentsApiReferencePage() {
     return (
@@ -449,9 +450,9 @@ Agent->AddToolByClass(USubmitFormTool::StaticClass(), true);`}
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/agentic/using-agents">Using Agents</a> - Practical guide to creating and using agents</li>
-                        <li><a href="/generative-ai/agentic/mcp-server">MCP Server</a> - Connect to external tool providers</li>
-                        <li><a href="/generative-ai/features/tools">Creating Tools</a> - Tool implementation guide</li>
+                        <li><a href={LINK.GENERATIVE_AI.AGENTIC.USING_AGENTS}>Using Agents</a> - Practical guide to creating and using agents</li>
+                        <li><a href={LINK.GENERATIVE_AI.AGENTIC.MCP_SERVER}>MCP Server</a> - Connect to external tool providers</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Creating Tools</a> - Tool implementation guide</li>
                     </ul>
 
                     <PageFooter />

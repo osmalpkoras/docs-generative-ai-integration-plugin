@@ -125,10 +125,8 @@ export default function GettingStartedPage() {
                 </p>
 
                 <ul>
-                    <li><a href="/generative-ai/core/using-sessions">Using Sessions</a> - Learn how to create and manage AI sessions</li>
-                    <li><a href="/generative-ai/core/endpoint-configuration">Endpoint Configuration</a> - Detailed guide on configuring different providers</li>
-                    <li><a href={LINK.GENERATIVE_AI.RESPONSES_API.INDEX}>Responses API</a> - Modern API with hosted tools and MCP integration</li>
-                    <li><a href={LINK.GENERATIVE_AI.COMPLETIONS_API.INDEX}>Completions API</a> - OpenAI-compatible API for broad provider support</li>
+                    <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Learn how to create and manage AI sessions</li>
+                    <li><a href={LINK.GENERATIVE_AI.CORE.ENDPOINT_CONFIGURATION}>Endpoint Configuration</a> - Detailed guide on configuring different providers</li>
                 </ul>
 
                 <PageFooter />

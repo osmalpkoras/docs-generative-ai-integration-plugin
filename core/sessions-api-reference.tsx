@@ -22,6 +22,7 @@ import {
     ApiPropertyGroup,
     EnumReference,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function SessionBasicsPage() {
     return (
@@ -839,11 +840,11 @@ Session->AddToolInstances(Tools);`}
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><a href="/generative-ai/api/responses-api">Responses API</a> - Modern API with hosted tools and MCP integration</li>
-                        <li><a href="/generative-ai/api/completions-api">Completions API</a> - OpenAI-compatible API for broad provider support</li>
-                        <li><a href="/generative-ai/features/tools">Tools</a> - Enable AI to execute custom functions</li>
-                        <li><a href="/generative-ai/features/streaming">Streaming</a> - Real-time response generation</li>
-                        <li><a href="/generative-ai/features/structured-output">Structured Output</a> - Type-safe JSON responses</li>
+                        <li><a href={LINK.GENERATIVE_AI.API.RESPONSES_API}>Responses API</a> - Modern API with hosted tools and MCP integration</li>
+                        <li><a href={LINK.GENERATIVE_AI.API.COMPLETIONS_API}>Completions API</a> - OpenAI-compatible API for broad provider support</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> - Enable AI to execute custom functions</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STREAMING}>Streaming</a> - Real-time response generation</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STRUCTURED_OUTPUT}>Structured Output</a> - Type-safe JSON responses</li>
                     </ul>
                 </LanguageToggleProvider>
 
