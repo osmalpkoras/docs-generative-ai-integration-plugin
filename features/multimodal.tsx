@@ -3,7 +3,7 @@ import { ContentPage } from '@/types/pages';
 export const metadata = {
     kind: 'content',
     title: 'Multimodal Inputs',
-    description: 'Working with images and other media types',
+    description: 'Send images and other media to AI models',
     order: 205
 } satisfies ContentPage;
 
@@ -11,75 +11,65 @@ import { SiteDocumentation, PageContainer, PageHeader, PageFooter } from '@/comp
 import {
     Callout,
     LanguageToggleProvider,
-    LanguageToggle,
-    CodeExample,
-    ConsoleOutput,
+    Example,
+    ExampleTitle,
+    ExampleContent,
+    ExampleCpp,
 } from '@/components/doc-components';
-import { LINK } from '@/lib/pages.generated';
 
 export default function MultimodalPage() {
     return (
         <SiteDocumentation>
             <PageContainer>
                 <LanguageToggleProvider>
-                    <div className="flex items-center justify-between mb-4">
-                        <PageHeader />
-                        <LanguageToggle />
-                    </div>
-
-                    <p className="text-muted-foreground">
-                        Multimodal AI can process multiple types of input including text, images, and more.
-                        Learn how to send images and other media to AI models.
-                    </p>
-
-                    <h2>What is Multimodal?</h2>
+                    <PageHeader />
 
                     <p>
-                        Multimodal models can understand and reason about different types of content:
+                        Multimodal models can process images alongside text, enabling vision-based AI interactions.
+                        Both the Completions and Responses APIs support sending images as message content.
                     </p>
 
-                    <ul>
-                        <li><strong>Vision</strong>: Analyze images, screenshots, diagrams</li>
-                        <li><strong>Text + Images</strong>: Answer questions about visual content</li>
-                        <li><strong>Mixed Media</strong>: Combine multiple content types in one request</li>
-                    </ul>
+                    <h2>Completions API</h2>
 
-                    <h2>Completions API: Image Input</h2>
-
-                    <h3>Image from URL</h3>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`// Add message with image URL
-FCompletionApiMessage Msg;
+                    <Example>
+                        <ExampleTitle>Image from URL or Base64</ExampleTitle>
+                        <ExampleContent>
+                            Create a message with image and text content parts.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`FCompletionApiMessage Msg;
 Msg.Role = TEXT("user");
 
 // Text content
-FCompletionApiMessageContent TextContent;
-TextContent.Type = TEXT("text");
-TextContent.Text = TEXT("What's in this image?");
-Msg.Content.Add(TextContent);
+FCompletionApiMessageContentPart TextPart = 
+    FCompletionApiMessageContentPart::CreateText(
+        TEXT("What's in this image?")
+    );
+Msg.Content.Add(TextPart);
 
-// Image content
-FCompletionApiMessageContent ImageContent;
-ImageContent.Type = TEXT("image_url");
-ImageContent.ImageUrl = FCompletionApiImageUrl();
-ImageContent.ImageUrl->Url = TEXT("https://example.com/screenshot.jpg");
-Msg.Content.Add(ImageContent);
+// Image from URL
+FCompletionApiImageUrl ImageUrl;
+ImageUrl.Url = TEXT("https://example.com/screenshot.jpg");
+ImageUrl.Detail = EResponsesApiImageDetail::High;  // or Low, Auto
+
+FCompletionApiMessageContentPart ImagePart = 
+    FCompletionApiMessageContentPart::CreateInputImage(ImageUrl);
+Msg.Content.Add(ImagePart);
 
 Session->Request.Messages.Add(Msg);
 Session->Generate(/* ... */);`}
-                    />
+                        </ExampleCpp>
+                    </Example>
 
-                    <h3>Base64 Encoded Images</h3>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`// Load image from file
+                    <Example>
+                        <ExampleTitle>Base64 Encoded Image</ExampleTitle>
+                        <ExampleContent>
+                            Load image from disk, encode as base64, and send as data URL.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`// Load image
 TArray<uint8> ImageData;
 FFileHelper::LoadFileToArray(ImageData, TEXT("path/to/image.png"));
-
-// Convert to base64
 FString Base64 = FBase64::Encode(ImageData);
 
 // Create data URL
@@ -89,443 +79,233 @@ FString DataUrl = FString::Printf(
 );
 
 // Add to message
-FCompletionApiMessageContent ImageContent;
-ImageContent.Type = TEXT("image_url");
-ImageContent.ImageUrl = FCompletionApiImageUrl();
-ImageContent.ImageUrl->Url = DataUrl;
-Msg.Content.Add(ImageContent);`}
-                    />
+FCompletionApiImageUrl ImageUrl;
+ImageUrl.Url = DataUrl;
+ImageUrl.Detail = EResponsesApiImageDetail::High;
 
-                    <h3>Image Detail Level</h3>
+FCompletionApiMessageContentPart ImagePart = 
+    FCompletionApiMessageContentPart::CreateInputImage(ImageUrl);
+Msg.Content.Add(ImagePart);`}
+                        </ExampleCpp>
+                    </Example>
 
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`ImageContent.ImageUrl->Detail = TEXT("high");  // or "low", "auto"
+                    <h2>Responses API</h2>
 
-// low: Faster, cheaper, less detailed analysis
-// high: Slower, more expensive, detailed analysis
-// auto: Model decides based on image`}
-                    />
-
-                    <h2>Responses API: Image Input</h2>
-
-                    <h3>Basic Image Message</h3>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`// Create message
-FResponsesApiMessage Msg;
+                    <Example>
+                        <ExampleTitle>Image Message</ExampleTitle>
+                        <ExampleContent>
+                            Use message content items to include images in Responses API messages.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`FResponsesApiMessage Msg;
 Msg.Role = EResponsesApiMessageRole::User;
 
 // Image content
-FResponsesApiInputMessageItem ImageItem;
-ImageItem.Type = EResponsesApiInputMessageItemType::Image;
-ImageItem.ImageData = FResponsesApiImageData();
-ImageItem.ImageData->Url = TEXT("https://example.com/screenshot.jpg");
-Msg.Content.Add(ImageItem);
+FResponsesApiInputImage ImageContent;
+ImageContent.ImageUrl = TEXT("https://example.com/screenshot.jpg");
+ImageContent.Detail = EResponsesApiImageDetail::High;
+Msg.Content.Add(ImageContent);
 
 // Text content
-FResponsesApiInputMessageItem TextItem;
-TextItem.Type = EResponsesApiInputMessageItemType::Text;
-TextItem.Text = TEXT("Describe what's happening in this screenshot.");
-Msg.Content.Add(TextItem);
+FResponsesApiInputText TextContent;
+TextContent.Text = TEXT("Describe what's happening in this screenshot.");
+Msg.Content.Add(TextContent);
 
 Session->Request.Messages.Add(Msg);
 Session->Generate(/* ... */);`}
-                    />
+                        </ExampleCpp>
+                    </Example>
 
-                    <h3>Multiple Images</h3>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`FResponsesApiMessage Msg;
+                    <Example>
+                        <ExampleTitle>Multiple Images</ExampleTitle>
+                        <ExampleContent>
+                            Add multiple images to a single message for comparative analysis.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`FResponsesApiMessage Msg;
 Msg.Role = EResponsesApiMessageRole::User;
 
 // First image
-FResponsesApiInputMessageItem Image1;
-Image1.Type = EResponsesApiInputMessageItemType::Image;
-Image1.ImageData = FResponsesApiImageData();
-Image1.ImageData->Url = TEXT("https://example.com/before.jpg");
+FResponsesApiInputImage Image1;
+Image1.ImageUrl = TEXT("https://example.com/before.jpg");
 Msg.Content.Add(Image1);
 
 // Second image
-FResponsesApiInputMessageItem Image2;
-Image2.Type = EResponsesApiInputMessageItemType::Image;
-Image2.ImageData = FResponsesApiImageData();
-Image2.ImageData->Url = TEXT("https://example.com/after.jpg");
+FResponsesApiInputImage Image2;
+Image2.ImageUrl = TEXT("https://example.com/after.jpg");
 Msg.Content.Add(Image2);
 
-// Question about both images
-FResponsesApiInputMessageItem Text;
-Text.Type = EResponsesApiInputMessageItemType::Text;
+// Question
+FResponsesApiInputText Text;
 Text.Text = TEXT("What changed between these two images?");
 Msg.Content.Add(Text);
 
 Session->Request.Messages.Add(Msg);`}
-                    />
+                        </ExampleCpp>
+                    </Example>
 
-                    <h2>Common Use Cases</h2>
+                    <h2>Image Detail Level</h2>
 
-                    <h3>Screenshot Analysis</h3>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`class UScreenshotAnalyzer : public UObject
-{
-    UPROPERTY()
-    UGAiResponsesApiSession* Session;
-
-public:
-    void AnalyzeGameplay(const FString& ScreenshotPath)
-    {
-        // Load screenshot
-        TArray<uint8> ImageData;
-        FFileHelper::LoadFileToArray(ImageData, *ScreenshotPath);
-        FString Base64 = FBase64::Encode(ImageData);
-
-        // Create message with image
-        FResponsesApiMessage Msg;
-        Msg.Role = EResponsesApiMessageRole::User;
-
-        FResponsesApiInputMessageItem ImageItem;
-        ImageItem.Type = EResponsesApiInputMessageItemType::Image;
-        ImageItem.ImageData = FResponsesApiImageData();
-        ImageItem.ImageData->Url = FString::Printf(
-            TEXT("data:image/png;base64,%s"),
-            *Base64
-        );
-        Msg.Content.Add(ImageItem);
-
-        FResponsesApiInputMessageItem TextItem;
-        TextItem.Type = EResponsesApiInputMessageItemType::Text;
-        TextItem.Text = TEXT("Analyze this gameplay screenshot. "
-                           "Describe the player's situation and suggest strategies.");
-        Msg.Content.Add(TextItem);
-
-        Session->Request.Messages.Add(Msg);
-
-        Session->Generate(
-            FOnGenerationComplete::CreateLambda([](const UGAiSession* Ctx)
-            {
-                FString Analysis = Ctx->GetAggregatedResponseText();
-                UE_LOG(LogTemp, Log, TEXT("Analysis: %s"), *Analysis);
-            })
-        );
-    }
-};`}
-                    />
-
-                    <h3>UI Element Recognition</h3>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`void AnalyzeUILayout(UTexture2D* UITexture)
-{
-    // Convert texture to bytes
-    TArray<uint8> ImageBytes;
-    ConvertTextureToBytes(UITexture, ImageBytes);
-    FString Base64 = FBase64::Encode(ImageBytes);
-
-    // Ask AI about UI elements
-    Session->AddUserMessage({
-        ImageItem: {
-            Type: Image,
-            Url: "data:image/png;base64," + Base64
-        },
-        TextItem: {
-            Type: Text,
-            Text: "List all buttons and interactive elements visible in this UI. "
-                 "Describe their locations and likely functions."
-        }
-    });
-
-    Session->Generate(/* ... */);
-}`}
-                    />
-
-                    <h3>Level Design Feedback</h3>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`void GetLevelDesignFeedback(const FString& TopDownImagePath)
-{
-    TArray<uint8> ImageData;
-    FFileHelper::LoadFileToArray(ImageData, *TopDownImagePath);
-    FString Base64 = FBase64::Encode(ImageData);
-
-    FResponsesApiMessage Msg;
-    Msg.Role = EResponsesApiMessageRole::User;
-
-    // Add top-down view image
-    FResponsesApiInputMessageItem ImageItem;
-    ImageItem.Type = EResponsesApiInputMessageItemType::Image;
-    ImageItem.ImageData = FResponsesApiImageData();
-    ImageItem.ImageData->Url = FString::Printf(
-        TEXT("data:image/png;base64,%s"),
-        *Base64
-    );
-    Msg.Content.Add(ImageItem);
-
-    // Request feedback
-    FResponsesApiInputMessageItem TextItem;
-    TextItem.Type = EResponsesApiInputMessageItemType::Text;
-    TextItem.Text = TEXT("This is a top-down view of a game level. "
-                       "Analyze the layout and provide feedback on: "
-                       "1) Flow and pacing, 2) Cover placement, "
-                       "3) Sightlines, 4) Potential camping spots.");
-    Msg.Content.Add(TextItem);
-
-    Session->Request.Messages.Add(Msg);
-    Session->Generate(/* ... */);
-}`}
-                    />
-
-                    <h2>Image Format Support</h2>
-
-                    <p>Most vision models support common formats:</p>
+                    <p>Control how much detail the model processes from images:</p>
 
                     <ul>
-                        <li><strong>PNG</strong>: Lossless, supports transparency</li>
-                        <li><strong>JPEG/JPG</strong>: Compressed photos</li>
-                        <li><strong>WebP</strong>: Modern format</li>
-                        <li><strong>GIF</strong>: Limited animation support (usually first frame)</li>
+                        <li><strong>High</strong>: Thorough analysis, slower, more expensive</li>
+                        <li><strong>Low</strong>: Faster processing, less detail, cheaper</li>
+                        <li><strong>Auto</strong>: Model chooses based on image characteristics</li>
                     </ul>
 
-                    <Callout type="info" title="Image Size Limits">
+                    <Example>
+                        <ExampleTitle>Setting Detail Level</ExampleTitle>
+                        <ExampleContent>
+                            Configure image detail for cost/performance trade-off.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`// Completions API
+ImageUrl.Detail = EResponsesApiImageDetail::High;
+
+// Responses API
+ImageContent.Detail = EResponsesApiImageDetail::Low;`}
+                        </ExampleCpp>
+                    </Example>
+
+                    <h2>Format Support</h2>
+
+                    <p>Common image formats supported by vision models:</p>
+
+                    <ul>
+                        <li><strong>PNG</strong>: Lossless, transparency support</li>
+                        <li><strong>JPEG</strong>: Compressed photos</li>
+                        <li><strong>WebP</strong>: Modern compression</li>
+                        <li><strong>GIF</strong>: First frame only</li>
+                    </ul>
+
+                    <Callout type="info" title="Size Limits">
                         <p>
-                            Check your provider's documentation for image size limits. Typical limits:
+                            Check provider documentation for limits. Typical maximums:
                         </p>
                         <ul>
-                            <li>OpenAI: 20MB per image, max 4096x4096 pixels</li>
+                            <li>OpenAI: 20MB, 4096x4096 pixels</li>
                             <li>Claude: 5MB per image</li>
                         </ul>
                     </Callout>
 
-                    <h2>Complete Example: Image Q&A System</h2>
+                    <h2>Practical Example</h2>
 
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`class UImageQASystem : public UObject
+                    <Example>
+                        <ExampleTitle>Screenshot Analysis</ExampleTitle>
+                        <ExampleContent>
+                            Analyze gameplay screenshots using multimodal input.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`void AnalyzeScreenshot(const FString& Path)
 {
-    UPROPERTY()
-    UGAiResponsesApiSession* Session;
+    // Load and encode
+    TArray<uint8> ImageData;
+    FFileHelper::LoadFileToArray(ImageData, *Path);
+    FString Base64 = FBase64::Encode(ImageData);
 
-public:
-    void Initialize(UGAiEndpointConfig* Config)
-    {
-        Session = UGAiResponsesApiSession::CreateChatSession(
-            Config, this,
-            TEXT("You are an expert at analyzing game screenshots and images. "
-                 "Provide detailed, accurate descriptions."),
-            TEXT("")
-        );
+    // Build message
+    FResponsesApiMessage Msg;
+    Msg.Role = EResponsesApiMessageRole::User;
 
-        Session->Request.MaxOutputTokens = 512;
-        Session->Request.Temperature = 0.7f;
-    }
+    FResponsesApiInputImage Image;
+    Image.ImageUrl = FString::Printf(
+        TEXT("data:image/png;base64,%s"),
+        *Base64
+    );
+    Msg.Content.Add(Image);
 
-    void AskAboutImage(const FString& ImagePath,
-                      const FString& Question,
-                      TFunction<void(const FString&)> OnAnswer)
-    {
-        // Load and encode image
-        TArray<uint8> ImageData;
-        if (!FFileHelper::LoadFileToArray(ImageData, *ImagePath))
+    FResponsesApiInputText Text;
+    Text.Text = TEXT("Analyze this gameplay screenshot. "
+                   "Describe the situation and suggest strategies.");
+    Msg.Content.Add(Text);
+
+    Session->Request.Messages.Add(Msg);
+
+    Session->Generate(
+        FOnGenerationComplete::CreateLambda([](const UGAiSession* Ctx)
         {
-            UE_LOG(LogTemp, Error, TEXT("Failed to load image: %s"), *ImagePath);
-            OnAnswer(TEXT("Error: Could not load image"));
-            return;
-        }
-
-        FString Base64 = FBase64::Encode(ImageData);
-
-        // Detect format from extension
-        FString Extension = FPaths::GetExtension(ImagePath).ToLower();
-        FString MimeType = TEXT("image/png");
-        if (Extension == TEXT("jpg") || Extension == TEXT("jpeg"))
-        {
-            MimeType = TEXT("image/jpeg");
-        }
-        else if (Extension == TEXT("webp"))
-        {
-            MimeType = TEXT("image/webp");
-        }
-
-        // Create message
-        FResponsesApiMessage Msg;
-        Msg.Role = EResponsesApiMessageRole::User;
-
-        // Add image
-        FResponsesApiInputMessageItem ImageItem;
-        ImageItem.Type = EResponsesApiInputMessageItemType::Image;
-        ImageItem.ImageData = FResponsesApiImageData();
-        ImageItem.ImageData->Url = FString::Printf(
-            TEXT("data:%s;base64,%s"),
-            *MimeType, *Base64
-        );
-        Msg.Content.Add(ImageItem);
-
-        // Add question
-        FResponsesApiInputMessageItem TextItem;
-        TextItem.Type = EResponsesApiInputMessageItemType::Text;
-        TextItem.Text = Question;
-        Msg.Content.Add(TextItem);
-
-        Session->Request.Messages.Add(Msg);
-
-        // Generate answer
-        Session->Generate(
-            FOnGenerationComplete::CreateLambda(
-                [OnAnswer](const UGAiSession* Ctx)
-            {
-                if (Ctx->HasError())
-                {
-                    OnAnswer(TEXT("Error: ") + Ctx->GetErrorMessage());
-                    return;
-                }
-
-                FString Answer = Ctx->GetAggregatedResponseText();
-                OnAnswer(Answer);
-            }),
-            FOnGenerationError::CreateLambda(
-                [OnAnswer](const UGAiSession* Ctx)
-            {
-                OnAnswer(TEXT("Error: ") + Ctx->GetErrorMessage());
-            })
-        );
-    }
-};
-
-// Usage
-void AnalyzeGameScreenshot()
-{
-    ImageQA->AskAboutImage(
-        TEXT("Content/Screenshots/gameplay.png"),
-        TEXT("What enemy types are visible and what are their positions?"),
-        [](const FString& Answer)
-        {
-            UE_LOG(LogTemp, Log, TEXT("AI Answer: %s"), *Answer);
-        }
+            FString Analysis = Ctx->GetAggregatedResponseText();
+            UE_LOG(LogTemp, Log, TEXT("%s"), *Analysis);
+        })
     );
 }`}
-                    />
+                        </ExampleCpp>
+                    </Example>
 
-                    <h2>Performance Considerations</h2>
+                    <h2>Performance Tips</h2>
 
-                    <h3>Image Size Optimization</h3>
+                    <h3>Resize Before Encoding</h3>
 
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`// Resize large images before sending
-UTexture2D* ResizeImage(UTexture2D* Original, int32 MaxDimension)
+                    <p>Reduce image dimensions to improve performance and reduce costs:</p>
+
+                    <Example>
+                        <ExampleTitle>Image Resizing</ExampleTitle>
+                        <ExampleContent>
+                            Keep images under 2048x2048 for optimal performance.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`UTexture2D* OptimizeForVision(UTexture2D* Original)
 {
     int32 Width = Original->GetSizeX();
     int32 Height = Original->GetSizeY();
+    int32 MaxDim = 2048;
 
-    if (Width <= MaxDimension && Height <= MaxDimension)
+    if (Width <= MaxDim && Height <= MaxDim)
     {
-        return Original;  // No resize needed
+        return Original;
     }
 
-    // Calculate new dimensions
     float Scale = FMath::Min(
-        (float)MaxDimension / Width,
-        (float)MaxDimension / Height
+        (float)MaxDim / Width,
+        (float)MaxDim / Height
     );
 
-    int32 NewWidth = FMath::RoundToInt(Width * Scale);
-    int32 NewHeight = FMath::RoundToInt(Height * Scale);
-
-    // Resize texture (implementation depends on your engine version)
-    return ResizeTexture(Original, NewWidth, NewHeight);
+    return ResizeTexture(Original, 
+        FMath::RoundToInt(Width * Scale),
+        FMath::RoundToInt(Height * Scale)
+    );
 }`}
-                    />
+                        </ExampleCpp>
+                    </Example>
 
-                    <h3>Caching Base64 Conversions</h3>
+                    <h3>Prefer URLs Over Base64</h3>
 
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`class UImageCache : public UObject
-{
-    TMap<FString, FString> Base64Cache;
+                    <p>When images are hosted, use URLs directly instead of encoding:</p>
 
-public:
-    FString GetOrConvertToBase64(const FString& ImagePath)
-    {
-        // Check cache
-        if (Base64Cache.Contains(ImagePath))
-        {
-            return Base64Cache[ImagePath];
-        }
+                    <Example>
+                        <ExampleTitle>URL vs Base64</ExampleTitle>
+                        <ExampleContent>
+                            URLs are more efficient than base64 encoding when available.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`// Prefer this (if image is hosted)
+ImageUrl.Url = TEXT("https://cdn.example.com/image.jpg");
 
-        // Load and convert
-        TArray<uint8> ImageData;
-        FFileHelper::LoadFileToArray(ImageData, *ImagePath);
-        FString Base64 = FBase64::Encode(ImageData);
+// Over this (large base64 strings)
+ImageUrl.Url = TEXT("data:image/jpeg;base64,/9j/4AAQSkZJRg...");`}
+                        </ExampleCpp>
+                    </Example>
 
-        // Cache result
-        Base64Cache.Add(ImagePath, Base64);
+                    <h2>Model Support</h2>
 
-        return Base64;
-    }
-};`}
-                    />
-
-                    <h2>Provider Support</h2>
+                    <p>Vision-capable models by provider:</p>
 
                     <ul>
-                        <li><strong>OpenAI</strong>: GPT-4o, GPT-4-turbo (vision support)</li>
-                        <li><strong>Claude</strong>: Claude 3+ models (Opus, Sonnet, Haiku)</li>
-                        <li><strong>Gemini</strong>: Gemini Pro Vision, Gemini 1.5+</li>
-                        <li><strong>Others</strong>: Check provider documentation</li>
+                        <li><strong>OpenAI</strong>: gpt-4o, gpt-4o-mini, gpt-4-turbo</li>
+                        <li><strong>Anthropic</strong>: claude-3-opus, claude-3-sonnet, claude-3-haiku, claude-3-5-sonnet</li>
+                        <li><strong>Google</strong>: gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash</li>
                     </ul>
 
-                    <Callout type="warning" title="Model Compatibility">
+                    <Callout type="warning" title="Check Model Capabilities">
                         <p>
-                            Not all models support vision. Ensure you're using a vision-capable model
-                            when sending images. Non-vision models will return an error.
+                            Not all models support vision. Verify your model supports multimodal input before sending
+                            images. Non-vision models will return errors when receiving image content.
                         </p>
                     </Callout>
 
-                    <h2>Common Issues</h2>
-
-                    <h3>Image Too Large</h3>
-
-                    <p>Resize images before encoding:</p>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`// Keep images under 2048x2048 for best performance
-if (Width > 2048 || Height > 2048)
-{
-    Texture = ResizeImage(Texture, 2048);
-}`}
-                    />
-
-                    <h3>Base64 String Too Long</h3>
-
-                    <p>Use URLs when possible instead of base64:</p>
-
-                    <CodeExample
-                        title="Code Example"
-                        cppCode={`// Prefer URL (if image is hosted)
-ImageContent.ImageUrl->Url = TEXT("https://cdn.example.com/image.jpg");
-
-// Instead of large base64 strings`}
-                    />
-
-                    <h2>Next Steps</h2>
-
-                    <ul>
-                        <li><strong>Structured Output</strong>: Get structured data from image analysis</li>
-                        <li><strong>Tools</strong>: Create tools that work with image analysis</li>
-                        <li><strong>Streaming</strong>: Stream responses for image descriptions</li>
-                    </ul>
-
+                    <PageFooter />
                 </LanguageToggleProvider>
-
-
-                <PageFooter />
             </PageContainer>
         </SiteDocumentation>
     );
