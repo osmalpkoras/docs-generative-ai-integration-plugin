@@ -13,6 +13,7 @@ import { Callout, Example, ExampleTitle, ExampleContent, ExampleCpp, LanguageTog
 import { Button } from '@/components/ui/button';
 import gaiLogo from '@/assets/GAI Logo.jpg';
 import { LINK } from '@/lib/pages.generated';
+import Link from "next/link";
 import siteConfig from './site.config';
 
 export default function HomePage() {
@@ -74,17 +75,17 @@ export default function HomePage() {
                     </div>
 
                     <div className="flex flex-wrap gap-3 items-center justify-center">
-                        <Button asChild className="bg-amber-300 hover:bg-amber-300/80">
+                        <Button asChild>
                             <a href={siteConfig.headerLinks["fab"].href} target="_blank" rel="noopener noreferrer">
                                 Buy on FAB
                             </a>
                         </Button>
-                        <Button variant="outline" asChild>
+                        <Button asChild variant="outline">
                             <a href={siteConfig.headerLinks["github"].href} target="_blank" rel="noopener noreferrer">
                                 View on GitHub
                             </a>
                         </Button>
-                        <Button variant="outline" asChild>
+                        <Button asChild variant="outline">
                             <a href={siteConfig.headerLinks["discord"].href} target="_blank" rel="noopener noreferrer">
                                 Join Discord
                             </a>
