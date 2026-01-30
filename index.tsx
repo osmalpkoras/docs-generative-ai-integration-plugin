@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { SiteDocumentation, PageContainer, PageHeader, PageFooter } from '@/components/layout';
 import { Callout, Example, ExampleTitle, ExampleContent, ExampleCpp, LanguageToggleProvider } from '@/components/doc-components';
 import { Button } from '@/components/ui/button';
-import gaiLogo from '@/assets/GAI Logo.jpg';
+import gaiLogo from '@/assets/GAI Logo.png';
 import { LINK } from '@/lib/pages.generated';
 import Link from "next/link";
 import siteConfig from './site.config';
