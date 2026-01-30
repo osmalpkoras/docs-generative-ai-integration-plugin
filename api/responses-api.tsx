@@ -3,7 +3,7 @@ import { ContentPage } from '@/types/pages';
 export const metadata = {
     kind: 'content',
     title: 'Responses API',
-    description: 'Complete guide to using the Responses API (recommended)',
+    description: 'Modern API with hosted tools, MCP integration, and rich response types',
     order: 102,
 } satisfies ContentPage;
 
@@ -15,7 +15,12 @@ import {
     ExampleTitle,
     ExampleContent,
     ExampleCpp,
+    ApiFunctionGroup,
+    ApiFunction,
+    ApiPropertyGroup,
+    ApiProperty,
 } from '@/components/doc-components';
+import { LINK } from '@/lib/pages.generated';
 
 export default function ResponsesApiPage() {
     return (
@@ -34,344 +39,157 @@ export default function ResponsesApiPage() {
                     <ul>
                         <li><strong>Hosted Tools</strong>: Built-in web search, file search, code interpreter, image generation</li>
                         <li><strong>MCP Integration</strong>: Native Model Context Protocol support</li>
-                        <li><strong>Rich Responses</strong>: Citations, reasoning traces, structured items</li>
+                        <li><strong>Rich Responses</strong>: Response items include citations, reasoning traces, and structured data</li>
+                        <li><strong>Developer Messages</strong>: Separate role for technical constraints vs core instructions</li>
                         <li><strong>Modern Features</strong>: Latest AI capabilities as they're released</li>
                     </ul>
 
-                    <h2>Creating a Session</h2>
-
-                    <h3>Chat Session</h3>
-
-                    <Example>
-                        <ExampleTitle>Chat Session</ExampleTitle>
-                        <ExampleContent>
-                            Create a chat session with system prompt and initial message for conversations.
-                        </ExampleContent>
-                        <ExampleCpp>
-                            {`#include "GenerativeAi/Sessions/GAiResponsesApiSession.h"
-
-// Create chat session with system prompt and initial message
-auto* Session = UGAiResponsesApiSession::CreateChatSession(
-    EndpointConfig,
-    this,
-    TEXT("You are a helpful quest designer."),
-    TEXT("Create a quest for a fantasy RPG.")
-);`}
-                        </ExampleCpp>
-                    </Example>
-
-                    <h3>Completion Session</h3>
-
-                    <Example>
-                        <ExampleTitle>Completion Session</ExampleTitle>
-                        <ExampleContent>
-                            Create a completion session for text generation without conversation history.
-                        </ExampleContent>
-                        <ExampleCpp>
-                            {`// Simple completion-style session
-auto* Session = UGAiResponsesApiSession::CreateCompletionSession(
-    EndpointConfig,
-    this,
-    TEXT("Generate a fantasy character name: ")
-);`}
-                        </ExampleCpp>
-                    </Example>
-
-                    <h2>Request Configuration</h2>
-
-                    <p>Configure via <code>Session-&gt;Request</code>:</p>
-
-                    <Example>
-                        <ExampleTitle>Request Parameters</ExampleTitle>
-                        <ExampleContent>
-                            Configure generation parameters including output limits, sampling, penalties, and tool execution settings.
-                        </ExampleContent>
-                        <ExampleCpp>
-                            {`// Output limits
-Session->Request.MaxOutputTokens = 1024;    // Max output length
-Session->Request.MaxPromptTokens = 4096;    // Max input length (optional)
-
-// Sampling parameters
-Session->Request.Temperature = 0.7f;        // Creativity (0.0-2.0)
-Session->Request.TopP = 0.9f;               // Nucleus sampling
-Session->Request.TopK = 40;                 // Top-K sampling
-
-// Penalties
-Session->Request.FrequencyPenalty = 0.0f;   // Reduce repetition
-Session->Request.PresencePenalty = 0.0f;    // Encourage new topics
-
-// Stop sequences
-Session->Request.Stop = {TEXT("\\n\\n"), TEXT("END")};
-
-// Reproducibility
-Session->Request.Seed = 12345;
-
-// Parallel tool calls
-Session->Request.ParallelToolCalls = true;  // Execute tools in parallel`}
-                        </ExampleCpp>
-                    </Example>
-
-                    <h3>Common Configurations</h3>
-
-                    <Example>
-                        <ExampleTitle>Common Configurations</ExampleTitle>
-                        <ExampleContent>
-                            Preset configurations for different use cases like creative writing, factual responses, and performance optimization.
-                        </ExampleContent>
-                        <ExampleCpp>
-                            {`// Creative writing
-Session->Request.Temperature = 1.2f;
-Session->Request.TopP = 0.95f;
-
-// Precise/factual
-Session->Request.Temperature = 0.2f;
-Session->Request.Seed = 42;
-
-// Fast responses
-Session->Request.MaxOutputTokens = 150;
-
-// Long-form content
-Session->Request.MaxOutputTokens = 4096;`}
-                        </ExampleCpp>
-                    </Example>
-
-                    <Callout type="info" title="Response Handling">
+                    <Callout type="info" title="Session Basics">
                         <p>
-                            For details on processing AI responses, working with response items, token usage, and error handling,
-                            see the <strong>Response Handling</strong> feature page.
+                            For general session usage including creating sessions, managing messages, handling responses, and error handling,
+                            see the <a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> and{' '}
+                            <a href={LINK.GENERATIVE_AI.CORE.SESSIONS_API_REFERENCE}>Sessions API Reference</a> pages.
+                            This page focuses on features unique to the Responses API.
                         </p>
                     </Callout>
 
-                    <h2>Custom Tools</h2>
-
-                    <p>Add custom tools to enable AI to execute game functions:</p>
+                    <h2>Responses API Sessions</h2>
 
                     <Example>
-                        <ExampleTitle>Using Custom Tools</ExampleTitle>
+                        <ExampleTitle>Using Developer Messages</ExampleTitle>
                         <ExampleContent>
-                            Create a session and register custom tools. Tools execute automatically during generation.
+
+                            The Responses API supports a separate <code>Developer</code> role for technical constraints, distinct from system instructions which define core AI behavior. Developer messages provide lower-priority technical guidelines that don't override system instructions.
                         </ExampleContent>
                         <ExampleCpp>
-                            {`// Create session
-auto* Session = UGAiResponsesApiSession::CreateChatSession(
+                            {`auto* Session = UGAiResponsesApiSession::CreateChatSession(
     EndpointConfig, this,
-    TEXT("You are an NPC AI. Use tools to perform actions."),
-    TEXT("The player asks for help finding the inn.")
+    TEXT("You are a helpful quest narrator."),
+    TEXT("")
 );
 
-// Add custom tools
-Session->AddToolByClass(UGetLocationTool::StaticClass());
-Session->AddToolByClass(UGiveDirectionsTool::StaticClass());
+// Add technical constraints via developer message
+Session->SetDeveloperMessage(TEXT("Keep all responses under 100 words."));
 
-// Tools execute automatically during generation
-Session->Generate(/* ... */);`}
+// Or use AddMessage for more control
+Session->AddMessage(
+    EResponsesApiMessageRole::Developer,
+    TEXT("Format all item names in [brackets].")
+);`}
                         </ExampleCpp>
                     </Example>
 
-                    <Callout type="info" title="Custom Tools">
-                        <p>
-                            For complete documentation on creating custom tools, see the <strong>Tools</strong> feature page.
-                        </p>
-                    </Callout>
-
-                    <h3>Hosted Tools (Responses API Exclusive)</h3>
-
-                    <p>The Responses API supports provider-integrated hosted tools:</p>
-
-                    <ul>
-                        <li><strong>Web Search</strong>: Search the internet for current information</li>
-                        <li><strong>File Search</strong>: Search through uploaded documents</li>
-                        <li><strong>Code Interpreter</strong>: Execute Python code in a sandbox</li>
-                        <li><strong>Image Generation</strong>: Generate images with DALL-E</li>
-                    </ul>
-
                     <Example>
-                        <ExampleTitle>Using Hosted Tools</ExampleTitle>
+                        <ExampleTitle>Adding Hosted Tools</ExampleTitle>
                         <ExampleContent>
-                            Add provider-integrated hosted tools like web search, file search, code interpreter, and image generation.
+                            The Responses API provides provider-integrated hosted tools that execute server-side like web search, file search, code interpreter, and image generation.
                         </ExampleContent>
                         <ExampleCpp>
-                            {`#include "GenerativeAi/Sessions/GAiResponsesApi.h"
-#include "GenerativeAi/Utility/InstancedStructUtils.h"
+                            {`#include "GenerativeAi/Utility/InstancedStructUtils.h"
 
-// Web search tool
+// Web search
 FResponsesApiWebSearchTool WebSearch;
 WebSearch.SearchContextSize = EResponsesApiWebSearchContextSize::Medium;
-Session->Request.Tools.Add(MakeInstancedStruct(WebSearch));`}
+Session->AddWebSearchTool(WebSearch);
+
+// File search
+FResponsesApiFileSearchTool FileSearch;
+FileSearch.VectorStoreIds = {TEXT("vs_abc123")};
+Session->AddFileSearchTool(FileSearch, true);
+
+// Code interpreter
+FResponsesApiCodeInterpreterTool CodeInterpreter;
+Session->AddCodeInterpreterTool(CodeInterpreter, true);
+
+// Image generation (DALL-E)
+FResponsesApiImageGenerationTool ImageGen;
+ImageGen.Model = TEXT("dall-e-3");
+Session->AddImageGenerationTool(ImageGen);`}
                         </ExampleCpp>
                     </Example>
 
                     <Callout type="info" title="Hosted Tools Documentation">
                         <p>
-                            For detailed guides on each hosted tool type including configuration options,
-                            use cases, and examples, see the <strong>Tools → Hosted Tools</strong> section.
+                            For detailed guides on each hosted tool type including configuration options and use cases,
+                            see the <strong>Hosted Tools</strong> section.
                         </p>
                     </Callout>
 
-                    <h2>Tool Choice Control</h2>
+                    <Callout type="warning" title="Feature Availability">
+                        <p>
+                            Hosted tools (web search, file search, etc.) are provider-specific.
+                            Check your provider's documentation for supported features.
+                        </p>
+                    </Callout>
 
                     <Example>
-                        <ExampleTitle>Tool Choice Control</ExampleTitle>
+                        <ExampleTitle>Working with Response Items</ExampleTitle>
                         <ExampleContent>
-                            Control how the AI uses tools: auto-select, require tool use, force specific tools, or disable tools entirely.
+                            Unlike message-only APIs, the Responses API provides structured response items including
+                            text, tool calls, citations, and reasoning traces. Query response items by type to access structured data beyond plain text.
                         </ExampleContent>
                         <ExampleCpp>
-                            {`// Let AI decide
-Session->Request.ToolChoice = FResponsesApiToolChoice{};
-Session->Request.ToolChoice->Mode = EResponsesApiToolChoiceMode::Auto;
+                            {`// Get all items of a specific type
+TArray<TInstancedStruct<FResponsesApiItemBase>> TextItems =
+    Session->GetItemsByType(EResponsesApiResponseItemType::MessageContent);
 
-// Require tool use
-Session->Request.ToolChoice->Mode = EResponsesApiToolChoiceMode::Required;
+int32 TotalItems = Session->GetItemCount();
 
-// Force specific tool
-Session->Request.ToolChoice->Mode = EResponsesApiToolChoiceMode::Function;
-Session->Request.ToolChoice->FunctionName = TEXT("GetLocation");
-
-// Disable tools for this request
-Session->Request.ToolChoice->Mode = EResponsesApiToolChoiceMode::None;`}
+// Query items added after the last user message
+// (useful for extracting what the AI added in the latest turn)
+TArray<TInstancedStruct<FResponsesApiItemBase>> LatestItems =
+    Session->GetItemsByTypeAfterLastUserMessage(
+        EResponsesApiResponseItemType::MessageContent
+    );`}
                         </ExampleCpp>
                     </Example>
 
-                    <Callout type="info" title="Streaming">
-                        <p>
-                            For real-time response streaming and stream options configuration,
-                            see the <strong>Streaming</strong> feature page.
-                        </p>
-                    </Callout>
-
-                    <Callout type="info" title="Multimodal Inputs">
-                        <p>
-                            For working with images and vision capabilities, see the <strong>Multimodal Inputs</strong> feature page.
-                        </p>
-                    </Callout>
-
-                    <Callout type="info" title="Structured Output">
-                        <p>
-                            For type-safe structured data and JSON schema configuration,
-                            see the <strong>Structured Output</strong> feature page.
-                        </p>
-                    </Callout>
-
-                    <h2>Reasoning Models</h2>
-
-                    <p>Some models (like o1) support extended reasoning:</p>
-
                     <Example>
-                        <ExampleTitle>Reasoning Models</ExampleTitle>
+                        <ExampleTitle>Stream Options Configuration</ExampleTitle>
                         <ExampleContent>
-                            Enable extended reasoning on models that support it (like o1). Control reasoning effort and stream reasoning traces.
+                            Configure what data is included in streaming responses:
                         </ExampleContent>
                         <ExampleCpp>
-                            {`// Enable reasoning options
-Session->Request.Reasoning = FResponsesApiReasoningOptions();
-Session->Request.Reasoning->Effort = TEXT("high");  // or "medium", "low"
-
-// Stream reasoning traces
+                            {`// Enable reasoning content streaming (for models like o1)
 Session->SetStreamOptions(
     static_cast<int32>(EResponsesApiStreamOption::ReasoningEncryptedContent)
 );
 
-Session->Generate(/* ... */);`}
+// Or combine multiple options
+int32 Options =
+    static_cast<int32>(EResponsesApiStreamOption::ReasoningEncryptedContent) |
+    static_cast<int32>(EResponsesApiStreamOption::IncludeUsage);
+Session->SetStreamOptions(Options);`}
                         </ExampleCpp>
                     </Example>
 
-                    <h2>Complete Example: Chat with Hosted Tools</h2>
-
                     <Example>
-                        <ExampleTitle>Chat with Hosted Tools</ExampleTitle>
+                        <ExampleTitle>Reasoning Configuration</ExampleTitle>
                         <ExampleContent>
-                            A complete example showing how to create a chat session with web search, configure parameters, and handle tool execution.
+                            Configure extended reasoning for models that support it (like o1):
                         </ExampleContent>
                         <ExampleCpp>
-                            {`class UEnhancedChatSystem : public UObject
-{
-    UPROPERTY()
-    UGAiResponsesApiSession* Session;
+                            {`// Enable reasoning with effort level
+Session->Request.Reasoning = FResponsesApiReasoningOptions();
+Session->Request.Reasoning->Effort = TEXT("high");  // "low", "medium", or "high"
 
-public:
-    void Initialize(UGAiEndpointConfig* Config)
-    {
-        // Create session
-        Session = UGAiResponsesApiSession::CreateChatSession(
-            Config, this,
-            TEXT("You are a helpful assistant with access to web search. "
-                 "Use web search when you need current information."),
-            TEXT("")
-        );
-
-        // Configure request
-        Session->Request.MaxOutputTokens = 512;
-        Session->Request.Temperature = 0.7f;
-
-        // Add web search tool
-        FResponsesApiWebSearchTool WebSearch;
-        WebSearch.SearchContextSize = EResponsesApiWebSearchContextSize::Medium;
-        Session->Request.Tools.Add(MakeInstancedStruct(WebSearch));
-
-        // Allow AI to decide when to use tools
-        Session->Request.ToolChoice = FResponsesApiToolChoice{};
-        Session->Request.ToolChoice->Mode = EResponsesApiToolChoiceMode::Auto;
-
-        // Limit tool execution loops
-        Session->MaxApiRequests = 3;
-    }
-
-    void SendMessage(const FString& Message)
-    {
-        Session->AddUserMessage(Message);
-
-        Session->Generate(
-            FOnGenerationComplete::CreateLambda([this](const UGAiSession* Ctx)
-            {
-                if (Ctx->HasError())
-                {
-                    HandleError(Ctx->GetErrorMessage());
-                    return;
-                }
-
-                FString Response = Ctx->GetAggregatedResponseText();
-                DisplayResponse(Response);
-            }),
-            FOnGenerationError::CreateLambda([this](const UGAiSession* Ctx)
-            {
-                HandleError(Ctx->GetErrorMessage());
-            })
-        );
-    }
-
-private:
-    void DisplayResponse(const FString& Text)
-    {
-        UE_LOG(LogTemp, Log, TEXT("[AI] %s"), *Text);
-        // Update UI...
-    }
-
-    void HandleError(const FString& Error)
-    {
-        UE_LOG(LogTemp, Error, TEXT("[Error] %s"), *Error);
-        // Show error message...
-    }
-};`}
+// Stream reasoning traces
+Session->SetStreamOptions(
+    static_cast<int32>(EResponsesApiStreamOption::ReasoningEncryptedContent)
+);`}
                         </ExampleCpp>
                     </Example>
 
-                    <h2>MCP Integration</h2>
-
-                    <p>Use Model Context Protocol tools:</p>
-
                     <Example>
-                        <ExampleTitle>MCP Integration</ExampleTitle>
+                        <ExampleTitle>MCP Tool Integration</ExampleTitle>
                         <ExampleContent>
-                            Use Model Context Protocol (MCP) tools configured via the MCP server subsystem. MCP tools work like other tools.
+                            Add Model Context Protocol tools to integrate external capabilities through the MCP protocol.
                         </ExampleContent>
                         <ExampleCpp>
-                            {`// MCP tool (configured via MCP server subsystem)
+                            {`// Add MCP tool (requires MCP server configuration)
 FResponsesApiMcpTool McpTool;
 McpTool.ToolName = TEXT("my_external_tool");
-Session->Request.Tools.Add(MakeInstancedStruct(McpTool));
-
-// MCP tools work like any other tool
-Session->Generate(/* ... */);`}
+Session->AddMcpTool(McpTool);`}
                         </ExampleCpp>
                     </Example>
 
@@ -382,99 +200,460 @@ Session->Generate(/* ... */);`}
                         </p>
                     </Callout>
 
-                    <h2>Metadata</h2>
+                    <h2>API Reference</h2>
 
-                    <p>Attach metadata to requests:</p>
+                    <p>
+                        This section documents methods unique to <code>UGAiResponsesApiSession</code>.
+                        For base session methods (message management, generation, error handling), see the{' '}
+                        <a href={LINK.GENERATIVE_AI.CORE.SESSIONS_API_REFERENCE}>Sessions API Reference</a>.
+                    </p>
 
-                    <Example>
-                        <ExampleTitle>Request Metadata</ExampleTitle>
-                        <ExampleContent>
-                            Add custom metadata to track and identify requests in your application.
-                        </ExampleContent>
-                        <ExampleCpp>
-                            {`Session->Request.Metadata.Add(TEXT("user_id"), TEXT("player_123"));
-Session->Request.Metadata.Add(TEXT("session_id"), TEXT("game_session_456"));
-Session->Request.Metadata.Add(TEXT("context"), TEXT("quest_dialogue"));`}
-                        </ExampleCpp>
-                    </Example>
+                    <h3>Properties</h3>
 
-                    <h2>Provider Compatibility</h2>
+                    <ApiPropertyGroup>
+                        <ApiProperty
+                            name="Request"
+                            type="FResponsesApiRequest"
+                            description="The request configuration containing all parameters for the next generation call including messages, tools, temperature, max tokens, and other settings."
+                            notes={[
+                                'Configure before calling Generate()',
+                                'Persists across multiple generations unless Reset() is called'
+                            ]}
+                        />
 
-                    <p>Responses API works best with:</p>
+                        <ApiProperty
+                            name="Response"
+                            type="FResponsesApiResponse"
+                            description="The response data from the most recent generation including response items, token usage, and metadata."
+                            notes={[
+                                'Read-only',
+                                'Updated after each successful generation',
+                                'Contains structured items rather than just text'
+                            ]}
+                        />
 
-                    <ul>
-                        <li><strong>OpenAI</strong>: Full support including all hosted tools</li>
-                        <li><strong>Anthropic (Claude)</strong>: Native Messages API support</li>
-                        <li><strong>Others</strong>: May have limited feature support</li>
-                    </ul>
+                        <ApiProperty
+                            name="CurrentStreamChunk"
+                            type="FResponsesApiSseEvent"
+                            description="The current streaming event being processed. Only valid during OnStreamChunk callback."
+                            notes={[
+                                'Read-only',
+                                'Contains incremental data from streaming response',
+                                'Updated for each chunk during streaming'
+                            ]}
+                        />
 
-                    <Callout type="warning" title="Feature Availability">
-                        <p>
-                            Hosted tools (web search, file search, etc.) are provider-specific.
-                            Check your provider's documentation for supported features.
-                        </p>
-                    </Callout>
+                        <ApiProperty
+                            name="StreamOptions"
+                            type="int32"
+                            description="Bitmask controlling what data is included in streaming responses. Use EResponsesApiStreamOption enum values."
+                            notes={[
+                                'Configure with SetStreamOptions()',
+                                'Combine multiple options with bitwise OR',
+                                'Affects streaming behavior for reasoning and usage data'
+                            ]}
+                        />
+                    </ApiPropertyGroup>
 
-                    <h2>Completions API vs Responses API</h2>
+                    <h3>Factory Methods</h3>
 
-                    <div className="mb-4">
-                        <table className="w-full border-collapse border border-border">
-                            <thead>
-                                <tr className="bg-muted">
-                                    <th className="border border-border p-2 text-left">Feature</th>
-                                    <th className="border border-border p-2 text-left">Completions API</th>
-                                    <th className="border border-border p-2 text-left">Responses API</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td className="border border-border p-2">Provider Compatibility</td>
-                                    <td className="border border-border p-2">Wide</td>
-                                    <td className="border border-border p-2">OpenAI, Claude</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-border p-2">Custom Tools</td>
-                                    <td className="border border-border p-2">✓</td>
-                                    <td className="border border-border p-2">✓</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-border p-2">Hosted Tools</td>
-                                    <td className="border border-border p-2">✗</td>
-                                    <td className="border border-border p-2">✓</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-border p-2">MCP Integration</td>
-                                    <td className="border border-border p-2">✗</td>
-                                    <td className="border border-border p-2">✓</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-border p-2">Rich Response Items</td>
-                                    <td className="border border-border p-2">✗</td>
-                                    <td className="border border-border p-2">✓</td>
-                                </tr>
-                                <tr>
-                                    <td className="border border-border p-2">Reasoning Traces</td>
-                                    <td className="border border-border p-2">✗</td>
-                                    <td className="border border-border p-2">✓</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <ApiFunctionGroup>
+                        <ApiFunction
+                            name="CreateSession"
+                            signature="static UGAiResponsesApiSession* CreateSession(UGAiEndpointConfig* InEndpointConfig, UObject* Outer = nullptr)"
+                            description="Creates a new Responses API session with minimal configuration."
+                            parameters={[
+                                {
+                                    name: 'InEndpointConfig',
+                                    type: 'UGAiEndpointConfig*',
+                                    description: 'Endpoint configuration defining the AI provider and model'
+                                },
+                                {
+                                    name: 'Outer',
+                                    type: 'UObject*',
+                                    description: 'Outer object for garbage collection. Use GetTransientPackage() for one-shot sessions.'
+                                }
+                            ]}
+                            returns={{
+                                type: 'UGAiResponsesApiSession*',
+                                description: 'New session instance'
+                            }}
+                        />
+
+                        <ApiFunction
+                            name="CreateChatSession"
+                            signature={`static UGAiResponsesApiSession* CreateChatSession(
+    UGAiEndpointConfig* InEndpointConfig,
+    UObject* Outer = nullptr,
+    FString SystemPrompt = TEXT(""),
+    FString UserText = TEXT("")
+)`}
+                            description="Creates a chat session with optional system prompt and initial user message."
+                            parameters={[
+                                {
+                                    name: 'InEndpointConfig',
+                                    type: 'UGAiEndpointConfig*',
+                                    description: 'Endpoint configuration'
+                                },
+                                {
+                                    name: 'Outer',
+                                    type: 'UObject*',
+                                    description: 'Outer object for GC management'
+                                },
+                                {
+                                    name: 'SystemPrompt',
+                                    type: 'FString',
+                                    description: 'Optional system instructions'
+                                },
+                                {
+                                    name: 'UserText',
+                                    type: 'FString',
+                                    description: 'Optional initial user message'
+                                }
+                            ]}
+                            returns={{
+                                type: 'UGAiResponsesApiSession*',
+                                description: 'New chat session instance'
+                            }}
+                            example={`auto* Session = UGAiResponsesApiSession::CreateChatSession(
+    Config, this,
+    TEXT("You are a helpful NPC."),
+    TEXT("Hello!")
+);`}
+                        />
+
+                        <ApiFunction
+                            name="CreateCompletionSession"
+                            signature={`static UGAiResponsesApiSession* CreateCompletionSession(
+    UGAiEndpointConfig* InEndpointConfig,
+    UObject* Outer = nullptr,
+    FString Prompt = TEXT("")
+)`}
+                            description="Creates a completion-style session for text generation without conversation history."
+                            parameters={[
+                                {
+                                    name: 'InEndpointConfig',
+                                    type: 'UGAiEndpointConfig*',
+                                    description: 'Endpoint configuration'
+                                },
+                                {
+                                    name: 'Outer',
+                                    type: 'UObject*',
+                                    description: 'Outer object for GC management'
+                                },
+                                {
+                                    name: 'Prompt',
+                                    type: 'FString',
+                                    description: 'Optional initial prompt text'
+                                }
+                            ]}
+                            returns={{
+                                type: 'UGAiResponsesApiSession*',
+                                description: 'New completion session instance'
+                            }}
+                        />
+                    </ApiFunctionGroup>
+
+                    <h3>Configuration Methods</h3>
+
+                    <ApiFunctionGroup>
+                        <ApiFunction
+                            name="SetDeveloperMessage"
+                            signature="void SetDeveloperMessage(const FString& Content)"
+                            description="Sets a developer message containing technical constraints and guidelines. Developer messages have lower priority than system messages."
+                            parameters={[
+                                {
+                                    name: 'Content',
+                                    type: 'const FString&',
+                                    description: 'Technical constraints or implementation details'
+                                }
+                            ]}
+                            example={`Session->SetDeveloperMessage(
+    TEXT("Keep responses under 100 words.")
+);`}
+                            notes={[
+                                'Use for technical constraints that shouldn\'t override system personality',
+                                'Not all models support developer messages',
+                                'Replaces existing developer message'
+                            ]}
+                        />
+
+                        <ApiFunction
+                            name="SetInstructions"
+                            signature="void SetInstructions(const FString& InInstructions)"
+                            description="Sets the system instructions that define the AI's behavior and personality. Alias for SetSystemMessage()."
+                            parameters={[
+                                {
+                                    name: 'InInstructions',
+                                    type: 'const FString&',
+                                    description: 'System-level instructions defining AI persona'
+                                }
+                            ]}
+                        />
+
+                        <ApiFunction
+                            name="SetStreamOptions"
+                            signature="void SetStreamOptions(int32 InStreamOptions)"
+                            description="Configures what data is included in streaming responses using EResponsesApiStreamOption enum flags."
+                            parameters={[
+                                {
+                                    name: 'InStreamOptions',
+                                    type: 'int32',
+                                    description: 'Bitmask of EResponsesApiStreamOption values'
+                                }
+                            ]}
+                            example={`// Enable reasoning streaming
+Session->SetStreamOptions(
+    static_cast<int32>(EResponsesApiStreamOption::ReasoningEncryptedContent)
+);
+
+// Combine multiple options
+int32 Options =
+    static_cast<int32>(EResponsesApiStreamOption::ReasoningEncryptedContent) |
+    static_cast<int32>(EResponsesApiStreamOption::IncludeUsage);
+Session->SetStreamOptions(Options);`}
+                        />
+
+                        <ApiFunction
+                            name="GetStreamOptions"
+                            signature="int32 GetStreamOptions() const"
+                            description="Returns the current stream options configuration."
+                            returns={{
+                                type: 'int32',
+                                description: 'Current stream options bitmask'
+                            }}
+                        />
+
+                        <ApiFunction
+                            name="SetResponseFormat"
+                            signature="void SetResponseFormat(EResponsesApiTextFormatType Type, const TSubclassOf<UObject> Class = nullptr)"
+                            description="Configures the response format for structured output. Enables JSON mode or JSON schema validation."
+                            parameters={[
+                                {
+                                    name: 'Type',
+                                    type: 'EResponsesApiTextFormatType',
+                                    description: 'Format type: Text, JsonObject, or JsonSchema'
+                                },
+                                {
+                                    name: 'Class',
+                                    type: 'const TSubclassOf<UObject>',
+                                    description: 'Optional UObject class for JsonSchema validation'
+                                }
+                            ]}
+                            example={`// JSON mode
+Session->SetResponseFormat(EResponsesApiTextFormatType::JsonObject);
+
+// JSON schema with validation
+Session->SetResponseFormat(
+    EResponsesApiTextFormatType::JsonSchema,
+    UMyDataClass::StaticClass()
+);`}
+                            notes={[
+                                'See Structured Output feature page for details',
+                                'Not all models support structured output',
+                                'JsonSchema mode validates and parses response into StructuredOutput property'
+                            ]}
+                        />
+                    </ApiFunctionGroup>
+
+                    <h3>Response Item Queries</h3>
+
+                    <ApiFunctionGroup>
+                        <ApiFunction
+                            name="GetItemCount"
+                            signature="int32 GetItemCount() const"
+                            description="Returns the total number of items in the current request input (all messages, tool calls, etc.)."
+                            returns={{
+                                type: 'int32',
+                                description: 'Total item count'
+                            }}
+                        />
+
+                        <ApiFunction
+                            name="GetItemsByType"
+                            signature="TArray<TInstancedStruct<FResponsesApiItemBase>> GetItemsByType(EResponsesApiResponseItemType Type) const"
+                            description="Retrieves all items matching a specific type from the request input."
+                            parameters={[
+                                {
+                                    name: 'Type',
+                                    type: 'EResponsesApiResponseItemType',
+                                    description: 'The item type to filter by'
+                                }
+                            ]}
+                            returns={{
+                                type: 'TArray<TInstancedStruct<FResponsesApiItemBase>>',
+                                description: 'Array of matching items'
+                            }}
+                            example={`auto TextItems = Session->GetItemsByType(
+    EResponsesApiResponseItemType::MessageContent
+);`}
+                        />
+
+                        <ApiFunction
+                            name="GetItemCountAfterLastUserMessage"
+                            signature="int32 GetItemCountAfterLastUserMessage() const"
+                            description="Returns the number of items added after the last user message. Useful for tracking what the AI added in the latest turn."
+                            returns={{
+                                type: 'int32',
+                                description: 'Number of items after last user message'
+                            }}
+                        />
+
+                        <ApiFunction
+                            name="GetItemsByTypeAfterLastUserMessage"
+                            signature="TArray<TInstancedStruct<FResponsesApiItemBase>> GetItemsByTypeAfterLastUserMessage(EResponsesApiResponseItemType Type) const"
+                            description="Retrieves items of a specific type that were added after the last user message."
+                            parameters={[
+                                {
+                                    name: 'Type',
+                                    type: 'EResponsesApiResponseItemType',
+                                    description: 'The item type to filter by'
+                                }
+                            ]}
+                            returns={{
+                                type: 'TArray<TInstancedStruct<FResponsesApiItemBase>>',
+                                description: 'Array of matching items from latest turn'
+                            }}
+                        />
+                    </ApiFunctionGroup>
+
+                    <h3>Tool Management</h3>
+
+                    <ApiFunctionGroup>
+                        <ApiFunction
+                            name="AddToolDefinition"
+                            signature="void AddToolDefinition(TInstancedStruct<FResponsesApiTool> ToolDefinition)"
+                            description="Adds a generic tool definition to the session. Use this for manually constructed tool definitions."
+                            parameters={[
+                                {
+                                    name: 'ToolDefinition',
+                                    type: 'TInstancedStruct<FResponsesApiTool>',
+                                    description: 'Instanced struct containing tool configuration'
+                                }
+                            ]}
+                        />
+
+                        <ApiFunction
+                            name="AddFileSearchTool"
+                            signature="void AddFileSearchTool(const FResponsesApiFileSearchTool& FileSearchToolOptions, bool bIncludeFileSearchResultsInResponse = false)"
+                            description="Adds a hosted file search tool for searching through uploaded documents."
+                            parameters={[
+                                {
+                                    name: 'FileSearchToolOptions',
+                                    type: 'const FResponsesApiFileSearchTool&',
+                                    description: 'Configuration including vector store IDs and search parameters'
+                                },
+                                {
+                                    name: 'bIncludeFileSearchResultsInResponse',
+                                    type: 'bool',
+                                    description: 'Whether to include search results in response'
+                                }
+                            ]}
+                            example={`FResponsesApiFileSearchTool FileSearch;
+FileSearch.VectorStoreIds = {TEXT("vs_abc123")};
+Session->AddFileSearchTool(FileSearch, true);`}
+                        />
+
+                        <ApiFunction
+                            name="AddWebSearchTool"
+                            signature="void AddWebSearchTool(const FResponsesApiWebSearchTool& WebSearchToolOptions, bool bVersion_2025_03_11 = false)"
+                            description="Adds a hosted web search tool for searching the internet."
+                            parameters={[
+                                {
+                                    name: 'WebSearchToolOptions',
+                                    type: 'const FResponsesApiWebSearchTool&',
+                                    description: 'Configuration including search context size'
+                                },
+                                {
+                                    name: 'bVersion_2025_03_11',
+                                    type: 'bool',
+                                    description: 'Use 2025-03-11 API version'
+                                }
+                            ]}
+                            example={`FResponsesApiWebSearchTool WebSearch;
+WebSearch.SearchContextSize = EResponsesApiWebSearchContextSize::Medium;
+Session->AddWebSearchTool(WebSearch);`}
+                        />
+
+                        <ApiFunction
+                            name="AddCodeInterpreterTool"
+                            signature="void AddCodeInterpreterTool(const FResponsesApiCodeInterpreterTool& CodeInterpreterOptions, bool bIncludeCodeInterpreterOutputInResponse = false)"
+                            description="Adds a hosted code interpreter tool for executing Python code in a sandbox."
+                            parameters={[
+                                {
+                                    name: 'CodeInterpreterOptions',
+                                    type: 'const FResponsesApiCodeInterpreterTool&',
+                                    description: 'Configuration for code interpreter'
+                                },
+                                {
+                                    name: 'bIncludeCodeInterpreterOutputInResponse',
+                                    type: 'bool',
+                                    description: 'Whether to include execution output in response'
+                                }
+                            ]}
+                        />
+
+                        <ApiFunction
+                            name="AddImageGenerationTool"
+                            signature="void AddImageGenerationTool(const FResponsesApiImageGenerationTool& ImageGenerationOptions)"
+                            description="Adds a hosted image generation tool (DALL-E)."
+                            parameters={[
+                                {
+                                    name: 'ImageGenerationOptions',
+                                    type: 'const FResponsesApiImageGenerationTool&',
+                                    description: 'Configuration including model selection'
+                                }
+                            ]}
+                            example={`FResponsesApiImageGenerationTool ImageGen;
+ImageGen.Model = TEXT("dall-e-3");
+Session->AddImageGenerationTool(ImageGen);`}
+                        />
+
+                        <ApiFunction
+                            name="AddMcpTool"
+                            signature="void AddMcpTool(const FResponsesApiMcpTool& McpToolOptions)"
+                            description="Adds a Model Context Protocol tool configured via the MCP server subsystem."
+                            parameters={[
+                                {
+                                    name: 'McpToolOptions',
+                                    type: 'const FResponsesApiMcpTool&',
+                                    description: 'Configuration including tool name'
+                                }
+                            ]}
+                            example={`FResponsesApiMcpTool McpTool;
+McpTool.ToolName = TEXT("my_external_tool");
+Session->AddMcpTool(McpTool);`}
+                            notes={[
+                                'Requires MCP server configuration',
+                                'See MCP Server documentation for setup details'
+                            ]}
+                        />
+
+                        <ApiFunction
+                            name="AddCustomTool"
+                            signature="void AddCustomTool(const FResponsesApiCustomTool& CustomToolOptions)"
+                            description="Adds a custom tool with manual definition."
+                            parameters={[
+                                {
+                                    name: 'CustomToolOptions',
+                                    type: 'const FResponsesApiCustomTool&',
+                                    description: 'Custom tool configuration'
+                                }
+                            ]}
+                        />
+                    </ApiFunctionGroup>
 
                     <h2>Next Steps</h2>
 
                     <ul>
-                        <li><strong>Response Handling</strong>: Work with response items and process outputs</li>
-                        <li><strong>Hosted Tools</strong>: Learn about web search, file search, code interpreter, and image generation</li>
-                        <li><strong>Tools</strong>: Create custom AI functions</li>
-                        <li><strong>Streaming</strong>: Real-time response generation</li>
-                        <li><strong>Multimodal Inputs</strong>: Work with images and vision</li>
-                        <li><strong>Structured Output</strong>: Get type-safe, validated responses</li>
-                        <li><strong>Agentic</strong>: Build autonomous AI agents</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.USING_SESSIONS}>Using Sessions</a> - Learn session basics and lifecycle management</li>
+                        <li><a href={LINK.GENERATIVE_AI.CORE.SESSIONS_API_REFERENCE}>Sessions API Reference</a> - Base session API documentation</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.TOOLS}>Tools</a> - Custom tool implementation</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STREAMING}>Streaming</a> - Real-time response generation</li>
+                        <li><a href={LINK.GENERATIVE_AI.FEATURES.STRUCTURED_OUTPUT}>Structured Output</a> - Type-safe JSON responses</li>
                     </ul>
 
                 </LanguageToggleProvider>
-
 
                 <PageFooter />
             </PageContainer>
