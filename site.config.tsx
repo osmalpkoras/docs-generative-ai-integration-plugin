@@ -1,6 +1,6 @@
 import type { SiteConfig } from '@/types/sites';
 import { getSiteUrl } from '@/lib/env';
-import thumbnail from '@/assets/generative-ai-launcher.jpg';
+import thumbnail from '@/assets/generative-ai-launcher.png';
 
 export default {
     name: 'Generative AI Integration Plugin',
