@@ -373,6 +373,69 @@ export default function SessionBasicsPage() {
                             signature="virtual void ClearMessages()"
                             description="Removes all messages from the conversation history without affecting configuration."
                         />
+
+                        <ApiFunction
+                            name="AddMultiModalMessage"
+                            signature="virtual bool AddMultiModalMessage(EResponsesApiMessageRole Role, const TArray<FGAiContentPart>& Content)"
+                            description="Adds a message whose content is an array of FGAiContentPart values (text + images + audio + files). Each part is validated against the active backend; if any part is unsupported, the message is not added, an error is logged, and the function returns false."
+                            parameters={[
+                                { name: 'Role', type: 'EResponsesApiMessageRole', description: 'Message role (User, Assistant, System, Developer, Tool).' },
+                                { name: 'Content', type: 'const TArray<FGAiContentPart>&', description: 'Multi-modal content parts to attach to this message.' }
+                            ]}
+                            returns={{ type: 'bool', description: 'true on success; false if any part is unsupported by the backend.' }}
+                            notes={[
+                                'Implemented by both UGAiCompletionsApiSession and UGAiResponsesApiSession',
+                                'Backend rejection rules are documented on the multi-modal feature page'
+                            ]}
+                        />
+
+                        <ApiFunction
+                            name="AddMessageWithImage"
+                            signature="bool AddMessageWithImage(EResponsesApiMessageRole Role, const FString& Text, const FGAiImageContent& Image)"
+                            description="Convenience wrapper that builds a two-part array (text + image) and forwards to AddMultiModalMessage."
+                            returns={{ type: 'bool', description: 'true on success; false if the image is unsupported.' }}
+                        />
+
+                        <ApiFunction
+                            name="AddMessageWithAudio"
+                            signature="bool AddMessageWithAudio(EResponsesApiMessageRole Role, const FString& Text, const FGAiAudioContent& Audio)"
+                            description="Convenience wrapper that builds a two-part array (text + audio) and forwards to AddMultiModalMessage."
+                            returns={{ type: 'bool', description: 'true on success; false on Responses API sessions (audio input is not supported).' }}
+                        />
+
+                        <ApiFunction
+                            name="SetAudioOutputConfig"
+                            signature="virtual bool SetAudioOutputConfig(EResponsesApiVoice Voice, EResponsesApiAudioFormat Format)"
+                            description="Opt in to audio output. Configures the request's audio config and adds Audio to the modality list. Completions API only — Responses API sessions log an error and return false."
+                            parameters={[
+                                { name: 'Voice', type: 'EResponsesApiVoice', description: 'Desired voice identifier (e.g. Alloy, Nova).' },
+                                { name: 'Format', type: 'EResponsesApiAudioFormat', description: 'Desired audio format (WAV, MP3, FLAC, OPUS, PCM16).' }
+                            ]}
+                            returns={{ type: 'bool', description: 'true if accepted; false if the active backend does not produce audio output.' }}
+                        />
+                    </ApiFunctionGroup>
+
+                    <h3>Multi-Modal Output</h3>
+
+                    <ApiFunctionGroup>
+                        <ApiFunction
+                            name="GetMessageContentParts"
+                            signature="virtual TArray<FGAiContentPart> GetMessageContentParts(int32 Index = -1) const"
+                            description="Returns the content of a stored message as an array of unified FGAiContentPart values. Each session subclass converts its backend-specific content to FGAiContentPart internally. Defaults to the last message when Index is -1."
+                            returns={{ type: 'TArray<FGAiContentPart>', description: 'Multi-modal parts for the requested message; empty if the index is out of range.' }}
+                        />
+
+                        <ApiFunction
+                            name="GetLastAudioOutput"
+                            signature="virtual TOptional<FGAiAudioContent> GetLastAudioOutput() const"
+                            description="Returns the most recent audio output. Completions API: scans response messages for audio output. Responses API: returns empty (audio output is not supported)."
+                        />
+
+                        <ApiFunction
+                            name="GetLastImageOutput"
+                            signature="virtual TOptional<FGAiImageContent> GetLastImageOutput() const"
+                            description="Returns the most recent image output. Responses API: scans for image-generation tool results. Completions API: returns empty (no image-generation tool)."
+                        />
                     </ApiFunctionGroup>
 
                     <h3>Querying Messages</h3>

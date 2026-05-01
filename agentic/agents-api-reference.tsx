@@ -168,6 +168,50 @@ export default function AgentsApiReferencePage() {
                         />
 
                         <ApiFunction
+                            name="Prompt (multi-modal overload)"
+                            signature={`void Prompt(
+    const FString& UserPrompt,
+    const TArray<FGAiContentPart>& AdditionalContent,
+    const FOnAgentComplete& OnComplete = FOnAgentComplete(),
+    const FOnAgentError& OnError = FOnAgentError(),
+    const FOnAgentToolCall& OnToolCall = FOnAgentToolCall()
+)`}
+                            description="Same agentic loop as the text-only Prompt, but attaches additional content parts (images, audio, files) to the user message. The session validates each part against the active backend; unsupported modalities cause the error delegate to fire immediately and the agent loop is not entered."
+                            parameters={[
+                                {
+                                    name: 'UserPrompt',
+                                    type: 'const FString&',
+                                    description: 'Optional text prompt. Sent as a leading text part when non-empty.'
+                                },
+                                {
+                                    name: 'AdditionalContent',
+                                    type: 'const TArray<FGAiContentPart>&',
+                                    description: 'Image, audio, and file parts to attach to the user message.'
+                                },
+                                {
+                                    name: 'OnComplete / OnError / OnToolCall',
+                                    type: 'delegates',
+                                    description: 'Same semantics as the text-only Prompt.'
+                                }
+                            ]}
+                            notes={[
+                                'Blueprint variant: Prompt_BP with FOnAgentComplete_BP / FOnAgentError_BP / FOnAgentToolCall_BP delegates',
+                                'See the multi-modal feature page for backend compatibility',
+                                'FGAiAgentRunResult.ContentParts holds non-text output after completion'
+                            ]}
+                        />
+
+                        <ApiFunction
+                            name="ConstructAdditionalContent"
+                            signature="virtual TArray<FGAiContentPart> ConstructAdditionalContent(const FString& Arguments) const"
+                            description="Override on a sub-agent to extract image/audio/file parts from delegation tool-call JSON. Default returns an empty array. Called alongside ConstructUserPrompt — the agent loop wires both into the multi-modal Prompt overload."
+                            notes={[
+                                'Use FGAiContentPart::FromJson to reconstruct parts from the arguments JSON',
+                                'Pair with a custom ConstructUserPrompt for full multi-modal delegation'
+                            ]}
+                        />
+
+                        <ApiFunction
                             name="ResetSession"
                             signature="void ResetSession()"
                             description="Clears the conversation history while preserving agent configuration, tools, and endpoint settings."
@@ -372,6 +416,22 @@ Agent->AddToolByClass(USubmitFormTool::StaticClass(), true);`}
                                 'Points to sub-agent in handoff mode',
                                 'Never null if successful'
                             ]}
+                        />
+
+                        <ApiProperty
+                            name="ContentParts"
+                            type="TArray<FGAiContentPart>"
+                            description="Multi-modal output of the last assistant message after the agent loop completes. Includes text, images and (when supported) audio parts."
+                            notes={[
+                                'Backward compatible: text-only callers can keep reading Result',
+                                'Populated from GetMessageContentParts() plus GetLastAudioOutput / GetLastImageOutput on the session'
+                            ]}
+                        />
+
+                        <ApiProperty
+                            name="GetAudioOutput / GetImageOutput"
+                            type="TOptional<FGAiAudioContent> / TOptional<FGAiImageContent>"
+                            description="Convenience methods on FGAiAgentRunResult that scan ContentParts for the first audio or image part. Return empty when no such part is present."
                         />
 
                         <ApiProperty

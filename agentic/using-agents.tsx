@@ -198,6 +198,45 @@ Agent->Prompt(
                         </ExampleCpp>
                     </Example>
 
+                    <h3>Multi-Modal Prompts</h3>
+
+                    <p>
+                        <code>Prompt</code> has an overload that accepts an array of
+                        <code>FGAiContentPart</code> alongside the user-prompt string. Use it to attach
+                        images, audio, or files to a user turn. See the <a href={LINK.GENERATIVE_AI.FEATURES.MULTIMODAL}>multi-modal page</a>
+                        for details on building content parts and on backend compatibility.
+                    </p>
+
+                    <Example>
+                        <ExampleTitle>Prompting with an Image</ExampleTitle>
+                        <ExampleContent>
+                            The agent constructs a single multi-part user message: text first (when
+                            non-empty), then each entry of <code>AdditionalContent</code>. If any part is
+                            unsupported by the active session backend, the error delegate fires immediately.
+                        </ExampleContent>
+                        <ExampleCpp>
+                            {`TArray<FGAiContentPart> Parts;
+Parts.Add(UGAiFileHelpers::CreateImageContentPart(
+    Screenshot, EResponsesApiImageDetail::High));
+
+Agent->Prompt(
+    TEXT("Describe what's wrong with this screenshot."),
+    Parts,
+    FOnAgentComplete::CreateLambda([](const FGAiAgentRunResult& Result)
+    {
+        // Plain text, like before
+        UE_LOG(LogTemp, Log, TEXT("Agent: %s"), *Result.Result);
+
+        // Multi-modal output (images/audio) lives here
+        for (const FGAiContentPart& Part : Result.ContentParts) { /* ... */ }
+
+        if (auto Audio = Result.GetAudioOutput(); Audio.IsSet()) { /* ... */ }
+        if (auto Image = Result.GetImageOutput(); Image.IsSet()) { /* ... */ }
+    })
+);`}
+                        </ExampleCpp>
+                    </Example>
+
                     <p>
                         Tools extend agent capabilities by allowing them to perform actions, query data, or interact
                         with your game. The agent decides when and how to use tools based on the task.

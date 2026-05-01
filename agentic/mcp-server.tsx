@@ -162,10 +162,45 @@ public:
                                 <p>
                                     The MCP server subsystem handles lifecycle automatically. It starts on editor
                                     launch, restarts when settings change, and shuts down when the editor closes.
+                                    Startup is deferred until the JSON schema cache has finished rebuilding, so
+                                    freshly compiled tools are always served correctly.
                                 </p>
                             </Callout>
                         </Step>
                     </StepList>
+
+                    <h2>Reliability</h2>
+
+                    <p>
+                        The MCP subsystem monitors the Python process and automatically restarts it with
+                        exponential backoff if it exits unexpectedly, so transient crashes or temporary
+                        port conflicts no longer require you to restart the editor. On shutdown the
+                        Python process is signalled to terminate gracefully before any force-kill, which
+                        keeps the configured port from being left locked.
+                    </p>
+
+                    <h3>Tool Execution Timeout</h3>
+                    <p>
+                        The <strong>Tool Execution Timeout Seconds</strong> setting is enforced. When a
+                        tool exceeds the configured budget, the call is aborted and the MCP client
+                        receives a structured error result instead of hanging. Pick a value high enough
+                        for your slowest tool.
+                    </p>
+
+                    <Callout type="warning" title="Stateless Tool Execution">
+                        <p>
+                            Each call uses a freshly constructed tool instance. Do not rely on instance
+                            state (member fields set during one call) being available on subsequent calls
+                            — store anything that needs to persist in a subsystem, an asset, or external
+                            storage instead.
+                        </p>
+                    </Callout>
+
+                    <p>
+                        The generated tools config lives under your project's <code>Saved/</code>
+                        directory and is regenerated from the schema cache; it is not meant to be
+                        hand-edited.
+                    </p>
 
                     <h2>Connecting External Clients</h2>
 
