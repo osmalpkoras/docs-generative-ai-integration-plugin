@@ -228,12 +228,12 @@ public:
                             Configure Claude Desktop to access Unreal Engine tools.
                         </ExampleContent>
                         <ExampleCpp>
-                            {`// In claude_desktop_config.json:
+                            {`// In .mcp.json:
 {
   "mcpServers": {
-    "unreal-engine": {
-      "command": "node",
-      "args": ["path/to/mcp-client.js", "http://localhost:3000"]
+    "unreal-generative-ai": {
+      "type": "sse",
+      "url": "http://localhost:11403/sse"
     }
   }
 }`}
